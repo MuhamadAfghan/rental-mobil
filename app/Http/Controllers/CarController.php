@@ -25,28 +25,38 @@ class CarController extends Controller
         return view('admin.add-car');
     }
 
+    /**
+     * Menyimpan data mobil baru ke database
+     * Menangani upload multiple images dan menyimpannya dalam format JSON
+     */
     public function store(Request $request)
     {
+        // Validasi input dari form
+        // images.* artinya validasi berlaku untuk setiap file dalam array images
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'transmission' => 'required|in:automatic,manual',
+            'transmission' => 'required|in:automatic,manual', // hanya menerima 2 nilai ini
             'baggage' => 'required|integer|min:0',
             'seats' => 'required|integer|min:1',
             'fuel_type' => 'required|string',
             'color' => 'required|string',
-            'driver' => 'required|boolean',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'driver' => 'required|boolean', // 0 atau 1
+            'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048' // max 2MB per gambar
         ]);
 
 
-        // Handle image uploads if needed
+        // Proses upload gambar jika ada file yang di-upload
         if ($request->hasFile('images')) {
             $imagePaths = [];
+            // Loop setiap gambar yang di-upload
             foreach ($request->file('images') as $image) {
+                // Simpan gambar ke storage/app/public/cars
+                // Laravel akan generate nama file unik otomatis
                 $path = $image->store('cars', 'public');
-                $imagePaths[] = $path;
+                $imagePaths[] = $path; // Simpan path ke array
             }
+            // Convert array path menjadi JSON string untuk disimpan di database
             $validated['images'] = json_encode($imagePaths);
         }
 
@@ -84,9 +94,11 @@ class CarController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * Menangani update data mobil termasuk replace gambar lama dengan yang baru
      */
     public function update(Request $request, Car $car)
     {
+        // Validasi input, images nullable karena tidak wajib upload gambar baru
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -99,37 +111,41 @@ class CarController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // Handle image uploads if new images are provided
+        // Ambil gambar yang sudah ada di database
+        // json_decode() mengubah JSON string menjadi array PHP
         $existingImages = json_decode($car->images, true) ?? [];
 
         if ($request->hasFile('images')) {
             $imagePaths = [];
             foreach ($request->file('images') as $index => $image) {
                 if ($image) {
-                    // Delete old image if exists
+                    // Hapus gambar lama dari storage jika ada
                     if (isset($existingImages[$index])) {
                         Storage::disk('public')->delete($existingImages[$index]);
                     }
 
+                    // Upload gambar baru
                     $path = $image->store('cars', 'public');
                     $imagePaths[$index] = $path;
                 } else {
-                    // Keep existing image if no new image uploaded
+                    // Pertahankan gambar lama jika tidak ada gambar baru
                     if (isset($existingImages[$index])) {
                         $imagePaths[$index] = $existingImages[$index];
                     }
                 }
             }
 
-            // Merge with existing images
+            // Merge dengan gambar existing yang tidak di-replace
             foreach ($existingImages as $index => $path) {
                 if (!isset($imagePaths[$index])) {
                     $imagePaths[$index] = $path;
                 }
             }
 
+            // Convert ke JSON dan reset index array (0,1,2,...)
             $validated['images'] = json_encode(array_values($imagePaths));
         } else {
+            // Jika tidak ada upload gambar baru, gunakan gambar lama
             $validated['images'] = $car->images;
         }
 
@@ -151,16 +167,17 @@ class CarController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Menghapus mobil dari database dan semua gambar terkait dari storage
      */
     public function destroy(Car $car)
     {
-        // Delete associated images from storage
+        // Hapus semua gambar dari storage terlebih dahulu
         $images = json_decode($car->images, true) ?? [];
         foreach ($images as $image) {
             Storage::disk('public')->delete($image);
         }
 
-        // Delete the car record from the database
+        // Hapus record mobil dari database
         $car->delete();
 
         return redirect('/admin/car-list')->with('success', 'Berhasil menghapus mobil.');

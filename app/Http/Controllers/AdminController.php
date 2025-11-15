@@ -8,15 +8,28 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    /**
+     * Menampilkan halaman laporan umum (general report)
+     * Berisi semua data rental/pesanan dari semua user
+     */
     public function generalReport()
     {
+        // Ambil semua rental dengan relasi car dan user (eager loading)
+        // Urutkan dari yang terbaru
         $data = Rental::orderBy('created_at', 'desc')->with('car', 'user')->get();
         return view('admin.general-report', compact('data'));
     }
 
+    /**
+     * Konfirmasi pembayaran rental oleh admin
+     * Update field is_confirmed menjadi true
+     */
     public function confirmRental($id)
     {
+        // Cari rental berdasarkan ID, throw 404 jika tidak ditemukan
         $rental = Rental::findOrFail($id);
+
+        // Set konfirmasi menjadi true (pembayaran disetujui)
         $rental->is_confirmed = true;
         $rental->save();
 

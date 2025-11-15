@@ -138,8 +138,15 @@
         </form>
     </div>
 
+    {{--
+        JavaScript untuk kalkulasi otomatis total pembayaran
+        Menghitung jumlah hari sewa dan total harga secara real-time
+    --}}
     <script>
+        // Ambil harga per hari dari PHP (di-inject ke JavaScript)
         const pricePerDay = {{ $car->price_per_day }};
+
+        // Ambil elemen-elemen HTML yang dibutuhkan
         const pickupDateInput = document.getElementById('pickup_date');
         const returnDateInput = document.getElementById('return_date');
         const rentalDurationEl = document.getElementById('rental-duration');
@@ -147,32 +154,48 @@
         const totalPaymentInput = document.getElementById('total_payment_input');
         const rentalDaysInput = document.getElementById('rental_days_input');
 
+        /**
+         * Format angka menjadi format Rupiah (Rp 1.000.000)
+         * @param {number} number - Angka yang akan diformat
+         * @returns {string} String dengan format Rupiah
+         */
         function formatRupiah(number) {
             return 'Rp ' + new Intl.NumberFormat('id-ID').format(number);
         }
 
+        /**
+         * Menghitung total pembayaran berdasarkan tanggal pickup dan return
+         * Dipanggil setiap kali ada perubahan pada input tanggal
+         */
         function calculateTotal() {
+            // Konversi string tanggal menjadi objek Date
             const pickupDate = new Date(pickupDateInput.value);
             const returnDate = new Date(returnDateInput.value);
 
+            // Validasi: pastikan kedua tanggal sudah diisi dan return >= pickup
             if (pickupDateInput.value && returnDateInput.value && returnDate >= pickupDate) {
-                // Hitung selisih hari
+                // Hitung selisih waktu dalam milidetik
                 const timeDiff = returnDate.getTime() - pickupDate.getTime();
+
+                // Konversi milidetik ke hari
+                // 1000 ms × 3600 detik × 24 jam = 1 hari
                 const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-                // Minimal 1 hari
+                // Minimal sewa 1 hari (jika pickup dan return di hari yang sama)
                 const rentalDays = dayDiff === 0 ? 1 : dayDiff;
 
-                // Hitung total
+                // Hitung total harga: harga per hari × jumlah hari
                 const total = pricePerDay * rentalDays;
 
-                // Update tampilan
+                // Update tampilan di halaman
                 rentalDurationEl.textContent = rentalDays + ' hari';
                 totalPaymentEl.textContent = formatRupiah(total);
+
+                // Update hidden input untuk dikirim ke server
                 totalPaymentInput.value = total;
                 rentalDaysInput.value = rentalDays;
             } else {
-                // Reset jika tanggal tidak valid
+                // Reset tampilan jika tanggal tidak valid
                 rentalDurationEl.textContent = '0 hari';
                 totalPaymentEl.textContent = 'Rp 0';
                 totalPaymentInput.value = 0;
@@ -180,17 +203,20 @@
             }
         }
 
-        // Event listeners untuk update otomatis
+        // Event listeners: panggil calculateTotal() setiap kali tanggal berubah
         pickupDateInput.addEventListener('change', calculateTotal);
         returnDateInput.addEventListener('change', calculateTotal);
 
-        // Set minimum date untuk pickup (hari ini)
-        const today = new Date().toISOString().split('T')[0];
+        // Set tanggal minimal untuk pickup adalah hari ini (tidak bisa pilih tanggal lampau)
+        const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
         pickupDateInput.setAttribute('min', today);
 
-        // Set minimum date untuk return berdasarkan pickup
+        // Set tanggal minimal untuk return berdasarkan tanggal pickup
         pickupDateInput.addEventListener('change', function() {
+            // Return date tidak boleh lebih awal dari pickup date
             returnDateInput.setAttribute('min', this.value);
+
+            // Reset return date jika ternyata lebih awal dari pickup date baru
             if (returnDateInput.value && returnDateInput.value < this.value) {
                 returnDateInput.value = '';
             }

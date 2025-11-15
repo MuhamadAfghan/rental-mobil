@@ -7,46 +7,55 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Model User
+ * Merepresentasikan data user (customer dan admin)
+ * Extends Authenticatable untuk fitur autentikasi bawaan Laravel
+ * Terhubung dengan tabel 'users' di database
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Field yang boleh diisi secara mass assignment
+     * Mass assignment = mengisi banyak field sekaligus
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'username',
-        'phone_number',
-        'role',
-        'address',
+        'name',         // Nama lengkap user
+        'email',        // Email (harus unik)
+        'password',     // Password (akan otomatis di-hash)
+        'username',     // Username (harus unik)
+        'phone_number', // Nomor telepon
+        'role',         // Role user (admin/user)
+        'address',      // Alamat lengkap
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Field yang disembunyikan saat konversi ke JSON/Array
+     * Untuk keamanan, password dan token tidak boleh ditampilkan
      *
      * @var list<string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password',       // Password tidak boleh di-return dalam response API
+        'remember_token', // Token "remember me" juga disembunyikan
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Mendefinisikan tipe data untuk field tertentu
+     * Laravel akan otomatis mengkonversi field ke tipe yang ditentukan
      *
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at' => 'datetime', // Convert ke objek Carbon (datetime)
+            'password' => 'hashed',            // Otomatis hash password saat di-set
         ];
     }
 }

@@ -165,20 +165,30 @@
 
                 </div>
 
+                {{--
+                    JavaScript untuk Image Gallery
+                    Mengubah gambar utama saat thumbnail diklik
+                --}}
                 <script>
+                    /**
+                     * Fungsi untuk mengganti gambar utama dan update border thumbnail
+                     * @param {string} imageUrl - URL gambar yang akan ditampilkan
+                     * @param {HTMLElement} element - Elemen thumbnail yang diklik
+                     */
                     function changeImage(imageUrl, element) {
-                        // Update main image
+                        // Update gambar utama dengan gambar dari thumbnail yang diklik
                         document.getElementById('main-image').src = imageUrl;
 
-                        // Remove active border from all thumbnails
+                        // Hapus border aktif dari semua thumbnail
+                        // querySelectorAll() mengambil semua elemen dengan class 'thumbnail'
                         document.querySelectorAll('.thumbnail').forEach(thumb => {
-                            thumb.classList.remove('border-2', 'border-red-600');
-                            thumb.classList.add('border', 'border-gray-300');
+                            thumb.classList.remove('border-2', 'border-red-600'); // Hapus border tebal merah
+                            thumb.classList.add('border', 'border-gray-300'); // Tambah border tipis abu-abu
                         });
 
-                        // Add active border to clicked thumbnail
-                        element.classList.remove('border', 'border-gray-300');
-                        element.classList.add('border-2', 'border-red-600');
+                        // Tambahkan border aktif ke thumbnail yang diklik
+                        element.classList.remove('border', 'border-gray-300'); // Hapus border abu-abu
+                        element.classList.add('border-2', 'border-red-600'); // Tambah border tebal merah
                     }
                 </script>
         </body>

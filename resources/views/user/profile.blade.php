@@ -199,8 +199,17 @@
         </div>
     </div>
 
+    {{--
+        JavaScript untuk Toggle Edit Mode
+        Mengaktifkan/menonaktifkan mode edit profil
+    --}}
     <script>
+        /**
+         * Fungsi untuk mengaktifkan mode edit
+         * Mengubah input dari readonly menjadi editable
+         */
         function toggleEdit() {
+            // Ambil semua input field yang akan diedit
             const inputs = [
                 document.getElementById('input-username'),
                 document.getElementById('input-name'),
@@ -212,18 +221,30 @@
             const btnEdit = document.getElementById('btn-edit');
             const btnActions = document.getElementById('btn-actions');
 
+            // Loop semua input dan aktifkan mode edit
             inputs.forEach(input => {
+                // Hapus atribut readonly agar input bisa diedit
                 input.removeAttribute('readonly');
-                input.classList.remove('bg-gray-100', 'text-gray-600');
-                input.classList.add('bg-white', 'text-gray-900');
+
+                // Ubah styling dari disabled ke enabled
+                input.classList.remove('bg-gray-100', 'text-gray-600'); // Hapus style readonly
+                input.classList.add('bg-white', 'text-gray-900'); // Tambah style editable
             });
 
+            // Sembunyikan tombol "Edit Profil"
             btnEdit.classList.add('hidden');
+
+            // Tampilkan tombol "Simpan" dan "Batal"
             btnActions.classList.remove('hidden');
             btnActions.classList.add('flex');
         }
 
+        /**
+         * Fungsi untuk membatalkan edit
+         * Reload halaman untuk reset semua perubahan
+         */
         function cancelEdit() {
+            // Reload halaman untuk membatalkan semua perubahan
             location.reload();
         }
     </script>

@@ -34,32 +34,67 @@
 
 <body class="min-h-screen bg-gray-100">
 
+    {{--
+        Helper Functions PHP untuk formatting dan kalkulasi
+        Functions ini bisa digunakan di template Blade
+    --}}
     @php
+        /**
+         * Format angka menjadi format Rupiah
+         * @param int $number - Angka yang akan diformat
+         * @return string - String dengan format Rupiah (Rp 1.000.000)
+         */
         function formatRupiah($number)
         {
+            // number_format(angka, desimal, separator desimal, separator ribuan)
             return 'Rp ' . number_format($number, 0, ',', '.');
         }
 
+        /**
+         * Mendapatkan label status dan warna badge berdasarkan status pembayaran
+         * @param string $status - Status pembayaran (paid/unpaid/cancelled)
+         * @param bool $isConfirmed - Apakah sudah dikonfirmasi admin
+         * @return array - Array berisi 'label' dan 'color' untuk badge
+         */
         function getStatusLabel($status, $isConfirmed)
         {
+            // Jika sudah dibayar DAN sudah dikonfirmasi admin
             if ($status === 'paid' && $isConfirmed) {
                 return ['label' => 'Dikonfirmasi', 'color' => 'text-green-600'];
-            } elseif ($status === 'paid' && !$isConfirmed) {
+            }
+            // Jika sudah dibayar tapi belum dikonfirmasi admin
+            elseif ($status === 'paid' && !$isConfirmed) {
                 return ['label' => 'Menunggu Konfirmasi', 'color' => 'text-blue-600'];
-            } elseif ($status === 'unpaid') {
+            }
+            // Jika belum dibayar
+            elseif ($status === 'unpaid') {
                 return ['label' => 'Menunggu Pembayaran', 'color' => 'text-yellow-600'];
-            } elseif ($status === 'cancelled') {
+            }
+            // Jika dibatalkan
+            elseif ($status === 'cancelled') {
                 return ['label' => 'Dibatalkan', 'color' => 'text-red-600'];
             }
         }
 
+        /**
+         * Menghitung jumlah hari sewa berdasarkan tanggal pickup dan return
+         * @param string $pickupDate - Tanggal pengambilan (format: Y-m-d)
+         * @param string $returnDate - Tanggal pengembalian (format: Y-m-d)
+         * @return int - Jumlah hari sewa (minimal 1 hari)
+         */
         function calculateDays($pickupDate, $returnDate)
         {
             $pickup = new DateTime($pickupDate);
             $return = new DateTime($returnDate);
+            // diff() menghitung selisih antara 2 tanggal
+            // ?: 1 artinya jika hasilnya 0, return 1 (minimal sewa 1 hari)
             return $pickup->diff($return)->days ?: 1;
         }
+
+        // Hitung jumlah hari sewa
         $sewaHari = calculateDays($order->pickup_date, $order->return_date);
+
+        // Cek apakah mobil menyediakan supir
         $hasDriver = $order->car->driver == 1;
     @endphp
 

@@ -130,18 +130,30 @@
 
 <body>
 
+    {{--
+        Helper Functions PHP untuk PDF
+        Functions yang sama dengan receipt.blade.php tapi untuk PDF
+    --}}
     @php
+        /**
+         * Format angka menjadi format Rupiah untuk PDF
+         */
         function formatRupiah($number)
         {
             return 'Rp ' . number_format($number, 0, ',', '.');
         }
 
+        /**
+         * Menghitung jumlah hari sewa
+         */
         function calculateDays($pickupDate, $returnDate)
         {
             $pickup = new DateTime($pickupDate);
             $return = new DateTime($returnDate);
             return $pickup->diff($return)->days ?: 1;
         }
+
+        // Kalkulasi untuk ditampilkan di PDF
         $sewaHari = calculateDays($order->pickup_date, $order->return_date);
         $hasDriver = $order->car->driver == 1;
     @endphp

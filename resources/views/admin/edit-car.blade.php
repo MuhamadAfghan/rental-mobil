@@ -355,40 +355,82 @@
         </form>
     </div>
 
+    {{--
+        JavaScript untuk Form Edit Mobil
+        Menginisialisasi form dengan data existing dan handle toggle buttons
+    --}}
     <script>
-        // Initialize form with existing data
+        /**
+         * Inisialisasi form saat halaman selesai dimuat
+         * Set nilai default transmission dan driver dari database
+         */
         document.addEventListener('DOMContentLoaded', function() {
+            // Ambil nilai transmission dari database (atau old input jika ada validation error)
+            // old() = nilai input sebelumnya (jika ada error validasi)
             const transmission = '{{ old('transmission', $car->transmission) }}';
             setTransmission(transmission);
 
+            // Ambil nilai driver dari database (convert ke boolean)
             const hasDriver = {{ old('driver', $car->driver) ? 'true' : 'false' }};
             setDriver(hasDriver);
         });
 
+        /**
+         * Set jenis transmisi dan update tampilan tombol
+         * @param {string} type - Jenis transmisi ('automatic' atau 'manual')
+         */
         function setTransmission(type) {
+            // Set value hidden input untuk dikirim ke server
             document.getElementById('transmission').value = type;
+
+            // Update tampilan tombol Automatic
             document.getElementById('btn-automatic').classList.toggle('active', type === 'automatic');
             document.getElementById('btn-automatic').classList.toggle('inactive', type !== 'automatic');
+
+            // Update tampilan tombol Manual
             document.getElementById('btn-manual').classList.toggle('active', type === 'manual');
             document.getElementById('btn-manual').classList.toggle('inactive', type !== 'manual');
         }
 
+        /**
+         * Set ketersediaan supir dan update tampilan tombol
+         * @param {boolean} hasDriver - true jika dengan supir, false jika tanpa supir
+         */
         function setDriver(hasDriver) {
+            // Set value hidden input: 1 = dengan supir, 0 = tanpa supir
             document.getElementById('with_driver').value = hasDriver ? '1' : '0';
+
+            // Update tampilan tombol "Ya"
             document.getElementById('btn-driver-yes').classList.toggle('active', hasDriver);
             document.getElementById('btn-driver-yes').classList.toggle('inactive', !hasDriver);
+
+            // Update tampilan tombol "Tidak"
             document.getElementById('btn-driver-no').classList.toggle('active', !hasDriver);
             document.getElementById('btn-driver-no').classList.toggle('inactive', hasDriver);
         }
 
+        /**
+         * Preview gambar sebelum upload
+         * @param {HTMLInputElement} input - Input file yang berisi gambar
+         * @param {string} previewId - ID elemen img untuk menampilkan preview
+         */
         function previewImage(input, previewId) {
             const preview = document.getElementById(previewId);
+
+            // Cek apakah ada file yang dipilih
             if (input.files && input.files[0]) {
+                // FileReader untuk membaca file sebagai Data URL
                 const reader = new FileReader();
+
+                // Callback saat file selesai dibaca
                 reader.onload = function(e) {
+                    // Set src img dengan Data URL dari file
                     preview.src = e.target.result;
+                    // Tampilkan preview (hilangkan class 'hidden')
                     preview.classList.remove('hidden');
                 }
+
+                // Mulai membaca file sebagai Data URL (base64)
                 reader.readAsDataURL(input.files[0]);
             }
         }
