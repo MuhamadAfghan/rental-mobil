@@ -111,6 +111,15 @@
                         <input type="time" id="return_time" name="return_time" value="" required
                             class="w-full border-b border-gray-300 pt-1 text-base text-gray-600 focus:border-red-500 focus:outline-none">
                     </div>
+                    <div>
+                        <label for="with_driver" class="block font-bold text-gray-900">Sewa dengan sopir</label>
+                        <select id="with_driver" name="with_driver" required
+                            class="w-full border-b border-gray-300 pt-1 text-base text-gray-600 focus:border-red-500 focus:outline-none">
+                            <option value="">Pilih opsi</option>
+                            <option value="1">Ya</option>
+                            <option value="0">Tidak</option>
+                        </select>
+                    </div>
 
 
                     <div class="rounded-lg bg-red-50 p-6">
@@ -122,6 +131,10 @@
                         <div class="mb-3 flex justify-between">
                             <p class="text-base font-semibold text-gray-700">Durasi sewa:</p>
                             <p class="text-base font-bold text-gray-900" id="rental-duration">0 hari</p>
+                        </div>
+                        <div class="mb-3 flex justify-between" id="driver-fee-row" style="display: none;">
+                            <p class="text-base font-semibold text-gray-700">Biaya Sopir perhari:</p>
+                            <p class="text-base font-bold text-gray-900" id="driver-fee">Rp 0</p>
                         </div>
                         <hr class="my-4 border-gray-300">
                         <div class="flex justify-between">
@@ -145,14 +158,18 @@
     <script>
         // Ambil harga per hari dari PHP (di-inject ke JavaScript)
         const pricePerDay = {{ $car->price_per_day }};
+        const driverFeePerDay = 100000; // Biaya sopir per hari
 
         // Ambil elemen-elemen HTML yang dibutuhkan
         const pickupDateInput = document.getElementById('pickup_date');
         const returnDateInput = document.getElementById('return_date');
+        const withDriverSelect = document.getElementById('with_driver');
         const rentalDurationEl = document.getElementById('rental-duration');
         const totalPaymentEl = document.getElementById('total-payment');
         const totalPaymentInput = document.getElementById('total_payment_input');
         const rentalDaysInput = document.getElementById('rental_days_input');
+        const driverFeeRow = document.getElementById('driver-fee-row');
+        const driverFeeEl = document.getElementById('driver-fee');
 
         /**
          * Format angka menjadi format Rupiah (Rp 1.000.000)
@@ -171,6 +188,7 @@
             // Konversi string tanggal menjadi objek Date
             const pickupDate = new Date(pickupDateInput.value);
             const returnDate = new Date(returnDateInput.value);
+            const withDriver = withDriverSelect.value === '1';
 
             // Validasi: pastikan kedua tanggal sudah diisi dan return >= pickup
             if (pickupDateInput.value && returnDateInput.value && returnDate >= pickupDate) {
@@ -184,8 +202,21 @@
                 // Minimal sewa 1 hari (jika pickup dan return di hari yang sama)
                 const rentalDays = dayDiff === 0 ? 1 : dayDiff;
 
+                // Hitung biaya sewa mobil
+                const carRentalCost = pricePerDay * rentalDays;
+
+                // Hitung biaya sopir jika dipilih
+                let driverFee = 0;
+                if (withDriver) {
+                    driverFee = driverFeePerDay * rentalDays;
+                    driverFeeRow.style.display = 'flex';
+                    driverFeeEl.textContent = formatRupiah(driverFeePerDay);
+                } else {
+                    driverFeeRow.style.display = 'none';
+                }
+
                 // Hitung total harga: harga per hari × jumlah hari
-                const total = pricePerDay * rentalDays;
+                const total = carRentalCost + driverFee;
 
                 // Update tampilan di halaman
                 rentalDurationEl.textContent = rentalDays + ' hari';
@@ -198,6 +229,7 @@
                 // Reset tampilan jika tanggal tidak valid
                 rentalDurationEl.textContent = '0 hari';
                 totalPaymentEl.textContent = 'Rp 0';
+                driverFeeRow.style.display = 'none';
                 totalPaymentInput.value = 0;
                 rentalDaysInput.value = 0;
             }
@@ -206,6 +238,7 @@
         // Event listeners: panggil calculateTotal() setiap kali tanggal berubah
         pickupDateInput.addEventListener('change', calculateTotal);
         returnDateInput.addEventListener('change', calculateTotal);
+        withDriverSelect.addEventListener('change', calculateTotal);
 
         // Set tanggal minimal untuk pickup adalah hari ini (tidak bisa pilih tanggal lampau)
         const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD

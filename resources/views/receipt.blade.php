@@ -94,8 +94,6 @@
         // Hitung jumlah hari sewa
         $sewaHari = calculateDays($order->pickup_date, $order->return_date);
 
-        // Cek apakah mobil menyediakan supir
-        $hasDriver = $order->car->driver == 1;
     @endphp
 
     <div class="mx-auto max-w-4xl px-4 pt-8 sm:px-6 lg:px-8">
@@ -143,7 +141,7 @@
                 </div>
                 <div>
                     <p class="font-bold text-gray-900">No. Telepon</p>
-                    <p class="text-base text-gray-600">{{ auth()->user()->phone ?? '-' }}</p>
+                    <p class="text-base text-gray-600">{{ auth()->user()->phone_number ?? '-' }}</p>
                 </div>
                 <div>
                     <p class="font-bold text-gray-900">Tgl Transaksi</p>
@@ -183,8 +181,8 @@
 
                 <div>
                     <p class="font-bold text-gray-900">Supir</p>
-                    <p class="{{ $hasDriver ? 'text-green-600' : 'text-red-600' }} text-base">
-                        {{ $hasDriver ? 'Ya' : 'Tidak' }}
+                    <p class="text-base">
+                        {{ $order->with_driver == 1 ? 'Ya' : 'Tidak' }}
                     </p>
                 </div>
 

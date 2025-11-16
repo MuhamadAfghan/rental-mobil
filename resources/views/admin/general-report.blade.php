@@ -108,6 +108,8 @@
                             Tanggal Return</th>
                         <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Waktu
                             Return</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Dengan Sopir</th>
                         <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">SO
                             Number</th>
                         <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -119,7 +121,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
 
-                    @foreach ($data as $report)
+                    @forelse ($data as $report)
                         <tr>
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->user->username }}</td>
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->user->email }}</td>
@@ -130,6 +132,8 @@
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->pickup_time }}</td>
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->return_date }}</td>
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->return_time }}</td>
+                            <td class="px-3 py-2 text-xs text-gray-900">
+                                {{ $report->with_driver == 1 ? 'Ya' : 'Tidak' }}</td>
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->so_number }}</td>
                             <td class="px-3 py-2">
                                 @if ($report->status === 'paid' && $report->is_confirmed)
@@ -138,7 +142,7 @@
                                         Paid</span>
                                 @elseif ($report->status === 'paid' && !$report->is_confirmed)
                                     <span
-                                        class="inline-flex rounded-full bg-blue-500 px-3 py-1 text-xs font-semibold text-white">
+                                        class="inline-flex rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white">
                                         Paid</span>
                                 @elseif ($report->status === 'unpaid')
                                     <span
@@ -169,7 +173,12 @@
                                 @endif
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="15" class="px-3 py-2 text-center text-xs text-gray-500">Belum ada data
+                                laporan.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

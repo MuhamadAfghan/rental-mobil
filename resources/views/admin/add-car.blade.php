@@ -226,26 +226,7 @@
                                     class="h-12 w-full rounded-lg border border-gray-300 px-2 py-1 focus:border-transparent focus:ring-2 focus:ring-red-500">
                             </div>
 
-                            <!-- Pengemudi -->
-                            <div>
-                                <div class="mb-3 flex items-center space-x-3">
-                                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-red-600">
-                                        <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <label class="text-lg font-semibold text-gray-800">Pengemudi</label>
-                                </div>
-                                <div class="flex space-x-2">
-                                    <button type="button" onclick="setDriver(true)" class="toggle-btn active"
-                                        id="btn-driver-yes">Yes</button>
-                                    <button type="button" onclick="setDriver(false)" class="toggle-btn inactive"
-                                        id="btn-driver-no">No</button>
-                                </div>
-                                <input type="hidden" name="driver" id="with_driver" value="1">
-                            </div>
+
                         </div>
                     </div>
 
@@ -336,23 +317,6 @@
             // Update tampilan tombol Manual
             document.getElementById('btn-manual').classList.toggle('active', type === 'manual');
             document.getElementById('btn-manual').classList.toggle('inactive', type !== 'manual');
-        }
-
-        /**
-         * Set ketersediaan supir dan update tampilan tombol
-         * @param {boolean} hasDriver - true jika dengan supir, false jika tanpa supir
-         */
-        function setDriver(hasDriver) {
-            // Set value hidden input: 1 = dengan supir, 0 = tanpa supir
-            document.getElementById('with_driver').value = hasDriver ? '1' : '0';
-
-            // Update tampilan tombol "Ya"
-            document.getElementById('btn-driver-yes').classList.toggle('active', hasDriver);
-            document.getElementById('btn-driver-yes').classList.toggle('inactive', !hasDriver);
-
-            // Update tampilan tombol "Tidak"
-            document.getElementById('btn-driver-no').classList.toggle('active', !hasDriver);
-            document.getElementById('btn-driver-no').classList.toggle('inactive', hasDriver);
         }
 
         /**

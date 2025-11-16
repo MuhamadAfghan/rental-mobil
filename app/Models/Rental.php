@@ -26,6 +26,7 @@ class Rental extends Model
         'is_confirmed',    // Apakah sudah dikonfirmasi admin (true/false)
         'total_price',     // Total harga yang harus dibayar
         'status',          // Status pembayaran (unpaid/paid/cancelled)
+        'with_driver',     // Apakah menyewa dengan supir (true/false)
     ];
 
     /**

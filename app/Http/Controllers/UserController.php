@@ -47,13 +47,20 @@ class UserController extends Controller
 
             'pickup_time' => 'required',
             'return_time' => 'required',
+            'with_driver' => 'required|boolean',
         ]);
 
         // Hitung total harga: harga per hari × jumlah hari sewa
         // strtotime() mengubah tanggal menjadi timestamp (detik)
         // Dibagi (60*60*24) untuk mengubah detik menjadi hari
         // +1 karena minimal sewa 1 hari
-        $total_price = $car->price_per_day * ((strtotime($request->return_date) - strtotime($request->pickup_date)) / (60 * 60 * 24) + 1);
+        $rentalDays = ((strtotime($request->return_date) - strtotime($request->pickup_date)) / (60 * 60 * 24)) + 1;
+        $total_price = $car->price_per_day * $rentalDays;
+
+        if ($request->with_driver == '1') {
+            // Tambah biaya supir tetap 100.000 per hari
+            $total_price += 100000 * $rentalDays;
+        }
 
         // Generate nomor SO unik, contoh: SO6748A3B2F1E9D
         $so_number = 'SO' . strtoupper(uniqid());
@@ -69,6 +76,7 @@ class UserController extends Controller
             'pickup_location' => $request->pickup_location,
             'total_price' => $total_price,
             'status' => 'unpaid',
+            'with_driver' => $request->with_driver,
         ]);
 
         // Logic untuk menyimpan pesanan akan ditambahkan di sini

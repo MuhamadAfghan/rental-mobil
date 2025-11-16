@@ -21,7 +21,6 @@ return new class extends Migration
             $table->enum('fuel_type', ['bensin', 'diesel', 'electric', 'hybrid']);
             $table->decimal('price_per_day', 10, 2);
             $table->json('images')->nullable();
-            $table->boolean('driver');
             $table->timestamps();
         });
     }

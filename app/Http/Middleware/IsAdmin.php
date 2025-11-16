@@ -29,6 +29,6 @@ class IsAdmin
         }
 
         // Jika bukan admin, tampilkan error 403 (Forbidden/Tidak punya akses)
-        abort(403, 'Unauthorized');
+        abort(403, 'Tidak bisa diakses oleh Anda. Role saat ini: ' . (auth()->check() ? auth()->user()->role : 'belum login'));
     }
 }

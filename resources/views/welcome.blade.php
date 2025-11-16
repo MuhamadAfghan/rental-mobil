@@ -307,7 +307,7 @@
                                         </div>
                                         <div class="leading-none">
                                             <p class="font-medium">Pengemudi</p>
-                                            <p class="text-xs text-gray-500">{{ $car->driver ? 'Ya' : 'Tidak' }}</p>
+                                            <p class="text-xs text-gray-500">Ya/Tidak</p>
                                         </div>
                                     </div>
                                 </div>

@@ -102,7 +102,6 @@
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Transmission</th>
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Seats</th>
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Fuel Type</th>
-                                <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Driver</th>
                                 <th class="px-4 py-3 text-left text-sm font-bold text-gray-700">Actions</th>
                             </tr>
                         </thead>
@@ -135,19 +134,6 @@
                                     </td>
                                     <td class="px-4 py-4 text-gray-600">{{ $car->seats }} Seats</td>
                                     <td class="px-4 py-4 text-gray-600">{{ ucfirst($car->fuel_type) }}</td>
-                                    <td class="px-4 py-4">
-                                        @if ($car->driver)
-                                            <span
-                                                class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
-                                                With Driver
-                                            </span>
-                                        @else
-                                            <span
-                                                class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-800">
-                                                Self Drive
-                                            </span>
-                                        @endif
-                                    </td>
                                     <td class="px-4 py-4">
                                         <div class="flex space-x-2">
                                             <a href="/admin/edit-car/{{ $car->id }}"

@@ -253,13 +253,6 @@
                                     </div>
                                     <label class="text-lg font-semibold text-gray-800">Pengemudi</label>
                                 </div>
-                                <div class="flex space-x-2">
-                                    <button type="button" onclick="setDriver(true)" class="toggle-btn active"
-                                        id="btn-driver-yes">Yes</button>
-                                    <button type="button" onclick="setDriver(false)" class="toggle-btn inactive"
-                                        id="btn-driver-no">No</button>
-                                </div>
-                                <input type="hidden" name="driver" id="with_driver" value="1">
                             </div>
                         </div>
                     </div>
@@ -362,17 +355,13 @@
     <script>
         /**
          * Inisialisasi form saat halaman selesai dimuat
-         * Set nilai default transmission dan driver dari database
+         * Set nilai default transmission dari database
          */
         document.addEventListener('DOMContentLoaded', function() {
             // Ambil nilai transmission dari database (atau old input jika ada validation error)
             // old() = nilai input sebelumnya (jika ada error validasi)
             const transmission = '{{ old('transmission', $car->transmission) }}';
             setTransmission(transmission);
-
-            // Ambil nilai driver dari database (convert ke boolean)
-            const hasDriver = {{ old('driver', $car->driver) ? 'true' : 'false' }};
-            setDriver(hasDriver);
         });
 
         /**
@@ -392,22 +381,6 @@
             document.getElementById('btn-manual').classList.toggle('inactive', type !== 'manual');
         }
 
-        /**
-         * Set ketersediaan supir dan update tampilan tombol
-         * @param {boolean} hasDriver - true jika dengan supir, false jika tanpa supir
-         */
-        function setDriver(hasDriver) {
-            // Set value hidden input: 1 = dengan supir, 0 = tanpa supir
-            document.getElementById('with_driver').value = hasDriver ? '1' : '0';
-
-            // Update tampilan tombol "Ya"
-            document.getElementById('btn-driver-yes').classList.toggle('active', hasDriver);
-            document.getElementById('btn-driver-yes').classList.toggle('inactive', !hasDriver);
-
-            // Update tampilan tombol "Tidak"
-            document.getElementById('btn-driver-no').classList.toggle('active', !hasDriver);
-            document.getElementById('btn-driver-no').classList.toggle('inactive', hasDriver);
-        }
 
         /**
          * Preview gambar sebelum upload

@@ -75,14 +75,6 @@
             </div>
         @endif
 
-        @if ($orderHistory->isEmpty())
-            <div class="py-12 text-center text-gray-600">
-                <p class="text-xl">Anda belum memiliki riwayat pesanan.</p>
-                <a href="{{ url('/') }}#menu-mobil" class="mt-2 inline-block text-blue-600 hover:underline">Mulai
-                    pesan sekarang!</a>
-            </div>
-        @endif
-
         @php
             function formatRupiah($number)
             {
@@ -114,7 +106,6 @@
             @php
                 $statusInfo = getStatusLabel($order->status, $order->is_confirmed);
                 $sewaHari = calculateDays($order->pickup_date, $order->return_date);
-                $hasDriver = $order->car->driver == 1;
             @endphp
 
             <div class="history-card">
@@ -138,7 +129,7 @@
                         </div>
                         <div>
                             <p class="font-bold text-gray-900">No. Telepon</p>
-                            <p class="text-base text-gray-600">{{ auth()->user()->phone ?? '-' }}</p>
+                            <p class="text-base text-gray-600">{{ auth()->user()->phone_number ?? '-' }}</p>
                         </div>
                         <div>
                             <p class="font-bold text-gray-900">Tgl Transaksi</p>
@@ -174,8 +165,8 @@
 
                         <div>
                             <p class="font-bold text-gray-900">Supir</p>
-                            <p class="{{ $hasDriver ? 'text-green-600' : 'text-red-600' }} text-base">
-                                {{ $hasDriver ? 'Ya' : 'Tidak' }}
+                            <p class="{{ $order->with_driver == 1 ? 'text-green-600' : 'text-red-600' }} text-base">
+                                {{ $order->with_driver == 1 ? 'Ya' : 'Tidak' }}
                             </p>
                         </div>
 

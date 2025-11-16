@@ -51,7 +51,6 @@ class AdminController extends Controller
             'seats' => 'required|integer|min:1',
             'fuel_type' => 'required|string',
             'color' => 'required|string',
-            'driver' => 'required|boolean',
             'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -75,7 +74,6 @@ class AdminController extends Controller
             'seats' => $validated['seats'],
             'fuel_type' => $validated['fuel_type'],
             'color' => $validated['color'],
-            'driver' => $validated['driver'],
             'images' => $validated['images'] ?? null,
         ]);
 

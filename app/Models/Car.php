@@ -29,7 +29,6 @@ class Car extends Model
         'seats',         // Jumlah kursi penumpang
         'baggage',       // Kapasitas bagasi (jumlah koper)
         'price_per_day', // Harga sewa per hari
-        'images',        // Path gambar mobil dalam format JSON array
-        'driver',        // Apakah tersedia dengan supir (1/0)
+        'images',        // Path gambar mobil dalam format JSON array 
     ];
 }

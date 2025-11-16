@@ -155,7 +155,6 @@
 
         // Kalkulasi untuk ditampilkan di PDF
         $sewaHari = calculateDays($order->pickup_date, $order->return_date);
-        $hasDriver = $order->car->driver == 1;
     @endphp
 
     <div class="header">
@@ -168,7 +167,11 @@
         <p>Tanggal Transaksi: {{ \Carbon\Carbon::parse($order->created_at)->format('d F Y H:i') }}</p>
         <div class="status-badges">
             <span class="badge badge-success">Berhasil</span>
-            <span class="badge badge-warning">Menunggu konfirmasi admin</span>
+            @if (!$order->is_confirmed)
+                <span class="badge badge-warning">Menunggu konfirmasi admin</span>
+            @else
+                <span class="badge badge-success">Dikonfirmasi admin</span>
+            @endif
         </div>
     </div>
 
@@ -224,8 +227,9 @@
                     </div>
                     <div class="detail-row">
                         <div class="detail-label">Supir</div>
-                        <div class="detail-value" style="color: {{ $hasDriver ? '#16a34a' : '#dc2626' }}">
-                            {{ $hasDriver ? 'Ya' : 'Tidak' }}
+                        <div class="detail-value"
+                            style="color: {{ $order->with_driver == 1 ? '#16a34a' : '#dc2626' }}">
+                            {{ $order->with_driver == 1 ? 'Ya' : 'Tidak' }}
                         </div>
                     </div>
 

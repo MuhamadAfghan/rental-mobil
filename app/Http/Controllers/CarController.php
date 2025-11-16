@@ -41,7 +41,6 @@ class CarController extends Controller
             'seats' => 'required|integer|min:1',
             'fuel_type' => 'required|string',
             'color' => 'required|string',
-            'driver' => 'required|boolean', // 0 atau 1
             'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048' // max 2MB per gambar
         ]);
 
@@ -69,7 +68,6 @@ class CarController extends Controller
             'seats' => $validated['seats'],
             'fuel_type' => $validated['fuel_type'],
             'color' => $validated['color'],
-            'driver' => $validated['driver'],
             'images' => $validated['images'] ?? null,
         ]);
 
@@ -107,7 +105,6 @@ class CarController extends Controller
             'seats' => 'required|integer|min:1',
             'fuel_type' => 'required|string',
             'color' => 'required|string',
-            'driver' => 'required|boolean',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -158,7 +155,6 @@ class CarController extends Controller
             'seats' => $validated['seats'],
             'fuel_type' => $validated['fuel_type'],
             'color' => $validated['color'],
-            'driver' => $validated['driver'],
             'images' => $validated['images'],
         ]);
 

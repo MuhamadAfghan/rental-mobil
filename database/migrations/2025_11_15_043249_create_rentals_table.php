@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('return_date');
             $table->time('return_time');
             $table->string('pickup_location');
+            $table->boolean('with_driver')->default(false);
             $table->boolean('is_confirmed')->default(false);
             $table->decimal('total_price', 10, 2);
             $table->enum('status', ['unpaid', 'paid', 'cancelled'])->default('unpaid');
