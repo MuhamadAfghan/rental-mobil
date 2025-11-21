@@ -22,7 +22,7 @@
 <body class="bg-gray-100">
 
     {{-- Icon WhatsApp --}}
-    <a href="https://wa.me/" target="_blank"
+    <a href="https://wa.me/+6285520950976" target="_blank"
         class="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-green-500 shadow-lg transition-transform duration-300 hover:scale-105">
 
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="h-6 w-6 text-white" viewBox="0 0 16 16">
