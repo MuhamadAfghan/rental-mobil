@@ -55,6 +55,9 @@
         </div>
 
         <nav class="space-y-1">
+            <a href="/" class="block px-4 py-3 text-lg font-medium transition duration-150 hover:bg-red-700">
+                Home
+            </a>
             <a href="/admin/general-report"
                 class="block px-4 py-3 text-lg font-medium transition duration-150 hover:bg-red-700">
                 General Report

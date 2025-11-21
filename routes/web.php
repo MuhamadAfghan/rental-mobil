@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
      */
     Route::middleware('is_admin')->group(function () {
         Route::get('/admin/general-report', [AdminController::class, 'generalReport']); // Laporan semua pesanan
-        Route::post('/admin/confirm-rental/{id}', [AdminController::class, 'confirmRental']); // Konfirmasi pembayaran
+        Route::put('/admin/rental/{id}/update-status', [AdminController::class, 'updateRentalStatus']); // Update status rental
 
         // CRUD Mobil
         Route::get('/admin/car-list', [CarController::class, 'index']); // Daftar mobil

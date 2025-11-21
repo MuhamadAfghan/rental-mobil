@@ -155,8 +155,17 @@
 
                                 </div>
 
-                                <a href="{{ url('/order/' . $car->id) }}"
-                                    class="mt-8 block w-full rounded-lg bg-red-600 py-3 text-center text-lg font-semibold text-white shadow-lg transition duration-300 hover:bg-red-700">PESAN</a>
+                                @if ($car->is_available)
+                                    <a href="{{ url('/order/' . $car->id) }}"
+                                        class="mt-8 block w-full rounded-lg bg-red-600 py-3 text-center text-lg font-semibold text-white shadow-lg transition duration-300 hover:bg-red-700">
+                                        PESAN
+                                    </a>
+                                @else
+                                    <button disabled
+                                        class="mt-8 block w-full cursor-not-allowed rounded-lg bg-gray-400 py-3 text-center text-lg font-semibold text-white opacity-70 shadow-lg">
+                                        Sedang Disewa
+                                    </button>
+                                @endif
 
                             </div>
                         </div>

@@ -1,3 +1,32 @@
+@php
+    // Fungsi untuk mendapatkan deskripsi status berdasarkan status rental dan status pembayaran
+    function getStatusDescription($status, $is_paid)
+    {
+        $result = '';
+
+        if ($status === 'pending' && !$is_paid) {
+            $result = 'Menunggu Konfirmasi - Belum Dibayar';
+        } elseif ($status === 'pending' && $is_paid) {
+            $result = 'Menunggu Konfirmasi - Sudah Dibayar';
+        } elseif ($status === 'ongoing' && $is_paid) {
+            $result = 'Sedang Disewa - Sudah Dibayar';
+        } elseif ($status === 'ongoing' && !$is_paid) {
+            $result = 'Sedang Disewa - Belum Dibayar';
+        } elseif ($status === 'completed' && $is_paid) {
+            $result = 'Sudah dikembalikan - Sudah Dibayar';
+        } elseif ($status === 'completed' && !$is_paid) {
+            $result = 'Sudah dikembalikan - Belum Dibayar';
+        } elseif ($status === 'cancelled' && $is_paid) {
+            $result = 'Dibatalkan - Sudah Dibayar';
+        } elseif ($status === 'cancelled' && !$is_paid) {
+            $result = 'Dibatalkan';
+        }
+        return $result;
+    }
+@endphp
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,6 +87,9 @@
         </div>
 
         <nav class="space-y-1">
+            <a href="/" class="block px-4 py-3 text-lg font-medium transition duration-150 hover:bg-red-700">
+                Home
+            </a>
             <a href="/admin/report"
                 class="block border-l-4 border-white bg-red-700 px-4 py-3 text-lg font-medium transition duration-150">
                 General Report
@@ -113,10 +145,12 @@
                         <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">SO
                             Number</th>
                         <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                            Status
+                            Status Pembayaran
                         </th>
                         <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                            Konfirmasi</th>
+                            Status Rental</th>
+                        <th class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            Deskripsi Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
@@ -135,12 +169,9 @@
                             <td class="px-3 py-2 text-xs text-gray-900">
                                 {{ $report->with_driver == 1 ? 'Ya' : 'Tidak' }}</td>
                             <td class="px-3 py-2 text-xs text-gray-900">{{ $report->so_number }}</td>
+                            {{-- Status Pembayaran --}}
                             <td class="px-3 py-2">
-                                @if ($report->status === 'paid' && $report->is_confirmed)
-                                    <span
-                                        class="inline-flex rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white">
-                                        Paid</span>
-                                @elseif ($report->status === 'paid' && !$report->is_confirmed)
+                                @if ($report->status === 'paid')
                                     <span
                                         class="inline-flex rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white">
                                         Paid</span>
@@ -154,28 +185,45 @@
                                         Cancelled</span>
                                 @endif
                             </td>
+                            {{-- Status Rental dengan Dropdown untuk Update --}}
                             <td class="px-3 py-2">
-                                @if ($report->status != 'paid')
-                                    -
-                                @elseif ($report->is_confirmed)
+                                @if ($report->status === 'cancelled')
                                     <span
-                                        class="inline-flex rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white">
-                                        Confirmed</span>
+                                        class="inline-flex rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white">
+                                        Cancelled</span>
                                 @else
-                                    <form action="/admin/confirm-rental/{{ $report->id }}" method="POST"
-                                        class="inline">
+                                    <form action="/admin/rental/{{ $report->id }}/update-status" method="POST"
+                                        class="inline-flex items-center gap-2">
                                         @csrf
-                                        <button type="submit"
-                                            class="inline-flex rounded-full bg-blue-500 px-3 py-1 text-xs font-semibold text-white transition duration-150 hover:bg-blue-600">
-                                            Confirm
-                                        </button>
+                                        @method('PUT')
+                                        <select name="rental_status"
+                                            class="rounded border-gray-300 text-xs focus:border-blue-500 focus:ring-blue-500"
+                                            onchange="this.form.submit()">
+                                            <option value="pending"
+                                                {{ $report->rental_status === 'pending' ? 'selected' : '' }}>
+                                                Pending</option>
+                                            <option value="ongoing"
+                                                {{ $report->rental_status === 'ongoing' ? 'selected' : '' }}>
+                                                Ongoing</option>
+                                            <option value="completed"
+                                                {{ $report->rental_status === 'completed' ? 'selected' : '' }}>
+                                                Completed
+                                            </option>
+                                            <option value="cancelled"
+                                                {{ $report->rental_status === 'cancelled' ? 'selected' : '' }}>
+                                                Cancelled
+                                            </option>
+                                        </select>
                                     </form>
                                 @endif
+                            </td>
+                            <td class="px-3 py-2 text-xs text-gray-900">
+                                {{ getStatusDescription($report->rental_status, $report->status) }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="15" class="px-3 py-2 text-center text-xs text-gray-500">Belum ada data
+                            <td colspan="14" class="px-3 py-2 text-center text-xs text-gray-500">Belum ada data
                                 laporan.</td>
                         </tr>
                     @endforelse

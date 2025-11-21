@@ -36,9 +36,15 @@ class UserController extends Controller
      * Menyimpan data pesanan mobil ke database
      * Menghitung total harga berdasarkan jumlah hari sewa
      * Generate nomor SO (Sales Order) otomatis
+     * Set mobil menjadi tidak tersedia saat di-booking
      */
     public function storeOrder(Request $request, Car $car)
     {
+        // Cek apakah mobil masih tersedia
+        if (!$car->is_available) {
+            return redirect()->back()->withErrors(['error' => 'Maaf, mobil ini sudah dipesan oleh customer lain.']);
+        }
+
         // Validasi input dari form pemesanan
         $request->validate([
             'pickup_date' => 'required|date',
@@ -76,10 +82,13 @@ class UserController extends Controller
             'pickup_location' => $request->pickup_location,
             'total_price' => $total_price,
             'status' => 'unpaid',
+            'rental_status' => 'pending',
             'with_driver' => $request->with_driver,
         ]);
 
-        // Logic untuk menyimpan pesanan akan ditambahkan di sini
+        // Set mobil menjadi tidak tersedia setelah di-booking
+        $car->update(['is_available' => false]);
+
         return redirect()->to('/user/history')->with('success', 'Pesanan berhasil dibuat!, silakan lanjutkan ke pembayaran.');
     }
 
@@ -165,6 +174,7 @@ class UserController extends Controller
     /**
      * Membatalkan pesanan rental
      * Hanya bisa membatalkan jika status masih 'unpaid'
+     * Mengembalikan ketersediaan mobil saat pesanan dibatalkan
      */
     public function cancelRental(Rental $rental)
     {
@@ -178,9 +188,13 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['error' => 'Pesanan tidak dapat dibatalkan!']);
         }
 
-        // Update status menjadi cancelled (tidak benar-benar dihapus dari database)
+        // Update status menjadi cancelled
         $rental->status = 'cancelled';
+        $rental->rental_status = 'cancelled';
         $rental->save();
+
+        // Kembalikan ketersediaan mobil
+        $rental->car->update(['is_available' => true]);
 
         return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan!');
     }

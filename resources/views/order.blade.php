@@ -56,10 +56,17 @@
                     </div>
                 </div>
 
-                <button type="submit"
-                    class="w-full transform rounded-xl bg-red-600 py-4 font-extrabold text-white shadow-xl transition duration-300 hover:scale-[1.01] hover:bg-red-700">
-                    Payment
-                </button>
+                @if ($car->is_available)
+                    <button type="submit"
+                        class="w-full transform rounded-xl bg-red-600 py-4 font-extrabold text-white shadow-xl transition duration-300 hover:scale-[1.01] hover:bg-red-700">
+                        Payment
+                    </button>
+                @else
+                    <button type="button" disabled
+                        class="w-full cursor-not-allowed rounded-xl bg-gray-400 py-4 font-extrabold text-white opacity-70 shadow-xl">
+                        Mobil Sedang Disewa
+                    </button>
+                @endif
 
                 <div class="flex justify-center space-x-4">
                     <span class="text-xs text-gray-500">DANA</span>

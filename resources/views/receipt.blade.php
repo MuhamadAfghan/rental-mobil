@@ -51,28 +51,36 @@
         }
 
         /**
-         * Mendapatkan label status dan warna badge berdasarkan status pembayaran
+         * Mendapatkan label status pembayaran dan warna badge
          * @param string $status - Status pembayaran (paid/unpaid/cancelled)
-         * @param bool $isConfirmed - Apakah sudah dikonfirmasi admin
          * @return array - Array berisi 'label' dan 'color' untuk badge
          */
-        function getStatusLabel($status, $isConfirmed)
+        function getPaymentStatusLabel($status)
         {
-            // Jika sudah dibayar DAN sudah dikonfirmasi admin
-            if ($status === 'paid' && $isConfirmed) {
-                return ['label' => 'Dikonfirmasi', 'color' => 'text-green-600'];
+            if ($status === 'paid') {
+                return ['label' => 'Sudah Dibayar', 'color' => 'bg-green-500'];
+            } elseif ($status === 'unpaid') {
+                return ['label' => 'Belum Dibayar', 'color' => 'bg-yellow-500'];
+            } elseif ($status === 'cancelled') {
+                return ['label' => 'Dibatalkan', 'color' => 'bg-red-500'];
             }
-            // Jika sudah dibayar tapi belum dikonfirmasi admin
-            elseif ($status === 'paid' && !$isConfirmed) {
-                return ['label' => 'Menunggu Konfirmasi', 'color' => 'text-blue-600'];
-            }
-            // Jika belum dibayar
-            elseif ($status === 'unpaid') {
-                return ['label' => 'Menunggu Pembayaran', 'color' => 'text-yellow-600'];
-            }
-            // Jika dibatalkan
-            elseif ($status === 'cancelled') {
-                return ['label' => 'Dibatalkan', 'color' => 'text-red-600'];
+        }
+
+        /**
+         * Mendapatkan label status rental dan warna badge
+         * @param string $rentalStatus - Status rental (pending/ongoing/completed/cancelled)
+         * @return array - Array berisi 'label' dan 'color' untuk badge
+         */
+        function getRentalStatusLabel($rentalStatus)
+        {
+            if ($rentalStatus === 'pending') {
+                return ['label' => 'Menunggu Konfirmasi', 'color' => 'bg-blue-500'];
+            } elseif ($rentalStatus === 'ongoing') {
+                return ['label' => 'Sedang Disewa', 'color' => 'bg-purple-500'];
+            } elseif ($rentalStatus === 'completed') {
+                return ['label' => 'Selesai', 'color' => 'bg-green-600'];
+            } elseif ($rentalStatus === 'cancelled') {
+                return ['label' => 'Dibatalkan', 'color' => 'bg-red-500'];
             }
         }
 
@@ -118,11 +126,15 @@
             <p class="text-sm text-gray-500">Tanggal Transaksi:
                 {{ \Carbon\Carbon::parse($order->created_at)->format('d F Y H:i') }}</p>
             <div class="mx-auto mt-3 flex items-center justify-center gap-2">
-                <span class="rounded-3xl bg-green-400 px-2 py-1 text-xs text-white">
-                    Berhasil
+                @php
+                    $paymentStatus = getPaymentStatusLabel($order->status);
+                    $rentalStatus = getRentalStatusLabel($order->rental_status);
+                @endphp
+                <span class="{{ $paymentStatus['color'] }} rounded-3xl px-2 py-1 text-xs text-white">
+                    {{ $paymentStatus['label'] }}
                 </span>
-                <span class="rounded-3xl bg-gray-600 px-2 py-1 text-xs text-white">
-                    Menunggu konfirmasi admin
+                <span class="{{ $rentalStatus['color'] }} rounded-3xl px-2 py-1 text-xs text-white">
+                    {{ $rentalStatus['label'] }}
                 </span>
             </div>
         </div>

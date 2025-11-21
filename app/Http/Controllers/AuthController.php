@@ -14,7 +14,8 @@ class AuthController extends Controller
      */
     public function home()
     {
-        $cars = Car::all(); // Ambil semua data mobil dari database
+        // Ambil hanya mobil yang tersedia (is_available = true)
+        $cars = Car::all();
         return view('welcome', compact('cars'));
     }
 

@@ -153,8 +153,44 @@
             return $pickup->diff($return)->days ?: 1;
         }
 
+        /**
+         * Mendapatkan label status pembayaran dan warna CSS untuk PDF
+         * @param string $status - Status pembayaran (paid/unpaid/cancelled)
+         * @return array - Array berisi 'label' dan 'color' untuk badge
+         */
+        function getPaymentStatusLabel($status)
+        {
+            if ($status === 'paid') {
+                return ['label' => 'Sudah Dibayar', 'color' => '#16a34a'];
+            } elseif ($status === 'unpaid') {
+                return ['label' => 'Belum Dibayar', 'color' => '#eab308'];
+            } elseif ($status === 'cancelled') {
+                return ['label' => 'Dibatalkan', 'color' => '#dc2626'];
+            }
+        }
+
+        /**
+         * Mendapatkan label status rental dan warna CSS untuk PDF
+         * @param string $rentalStatus - Status rental (pending/ongoing/completed/cancelled)
+         * @return array - Array berisi 'label' dan 'color' untuk badge
+         */
+        function getRentalStatusLabel($rentalStatus)
+        {
+            if ($rentalStatus === 'pending') {
+                return ['label' => 'Menunggu Konfirmasi', 'color' => '#3b82f6'];
+            } elseif ($rentalStatus === 'ongoing') {
+                return ['label' => 'Sedang Disewa', 'color' => '#9333ea'];
+            } elseif ($rentalStatus === 'completed') {
+                return ['label' => 'Selesai', 'color' => '#16a34a'];
+            } elseif ($rentalStatus === 'cancelled') {
+                return ['label' => 'Dibatalkan', 'color' => '#dc2626'];
+            }
+        }
+
         // Kalkulasi untuk ditampilkan di PDF
         $sewaHari = calculateDays($order->pickup_date, $order->return_date);
+        $paymentStatus = getPaymentStatusLabel($order->status);
+        $rentalStatus = getRentalStatusLabel($order->rental_status);
     @endphp
 
     <div class="header">
@@ -166,12 +202,10 @@
         <p style="font-size: 14px; font-weight: bold;">Booking ID: {{ $order->so_number }}</p>
         <p>Tanggal Transaksi: {{ \Carbon\Carbon::parse($order->created_at)->format('d F Y H:i') }}</p>
         <div class="status-badges">
-            <span class="badge badge-success">Berhasil</span>
-            @if (!$order->is_confirmed)
-                <span class="badge badge-warning">Menunggu konfirmasi admin</span>
-            @else
-                <span class="badge badge-success">Dikonfirmasi admin</span>
-            @endif
+            <span class="badge"
+                style="background-color: {{ $paymentStatus['color'] }}">{{ $paymentStatus['label'] }}</span>
+            <span class="badge"
+                style="background-color: {{ $rentalStatus['color'] }}">{{ $rentalStatus['label'] }}</span>
         </div>
     </div>
 

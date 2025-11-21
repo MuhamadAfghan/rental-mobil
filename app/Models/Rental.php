@@ -23,9 +23,9 @@ class Rental extends Model
         'pickup_time',     // Jam pengambilan mobil
         'return_time',     // Jam pengembalian mobil
         'pickup_location', // Lokasi pengambilan mobil
-        'is_confirmed',    // Apakah sudah dikonfirmasi admin (true/false)
         'total_price',     // Total harga yang harus dibayar
         'status',          // Status pembayaran (unpaid/paid/cancelled)
+        'rental_status',   // Status penyewaan (pending/ongoing/completed/cancelled)
         'with_driver',     // Apakah menyewa dengan supir (true/false)
     ];
 

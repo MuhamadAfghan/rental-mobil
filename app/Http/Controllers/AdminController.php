@@ -21,19 +21,29 @@ class AdminController extends Controller
     }
 
     /**
-     * Konfirmasi pembayaran rental oleh admin
-     * Update field is_confirmed menjadi true
+     * Update status rental oleh admin
+     * Mengubah rental_status untuk tracking progress penyewaan
      */
-    public function confirmRental($id)
+    public function updateRentalStatus(Request $request, $id)
     {
-        // Cari rental berdasarkan ID, throw 404 jika tidak ditemukan
         $rental = Rental::findOrFail($id);
 
-        // Set konfirmasi menjadi true (pembayaran disetujui)
-        $rental->is_confirmed = true;
+        $request->validate([
+            'rental_status' => 'required|in:pending,ongoing,completed,cancelled'
+        ]);
+
+        $rental->rental_status = $request->rental_status;
         $rental->save();
 
-        return redirect()->back()->with('success', 'Rental dikonfirmasi berhasil.');
+        // Jika status completed atau cancelled, kembalikan ketersediaan mobil
+        if ($request->rental_status === 'completed' || $request->rental_status === 'cancelled') {
+            $rental->car->update(['is_available' => true]);
+        } else {
+            // Set mobil menjadi tidak tersedia untuk status lain
+            $rental->car->update(['is_available' => false]);
+        }
+
+        return redirect()->back()->with('success', 'Status rental berhasil diupdate.');
     }
 
     public function addCarPage()
@@ -75,6 +85,7 @@ class AdminController extends Controller
             'fuel_type' => $validated['fuel_type'],
             'color' => $validated['color'],
             'images' => $validated['images'] ?? null,
+            'is_available' => true, // Mobil baru otomatis tersedia
         ]);
 
         return redirect()->back()->with('success', 'Berhasil menambahkan mobil.');
